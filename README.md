@@ -24,3 +24,26 @@ Your solution should include a working API and, some automated tests that verify
 
 Please include all of your source files (excluding 3rd party libraries such as node_modules) in your submission. Please include the schema for
 your database in the submission as well.
+
+-----------------------------------------
+
+Action items:
+
+Docker
+Kubernetes - minikube deployment
+Kubernetes - EKS
+AWS github
+AWS IAM
+AWS API Gateway 
+Enable Logging
+AWS Observability
+
+Test cases
+
+
+57 docker build -t product-api-image:1.0.0.1 .
+58 docker push product-api-image:1.0.0.1
+59 docker tag product-api-image:1.0.0.1 jbonu/product-api-image:1.0.0
+60 docker push jbonu/product-api-image:1.0.0
+
+

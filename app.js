@@ -1,61 +1,28 @@
 const express = require('express');
-const Product = require('./models/product.model');
-const uuid = require("uuid");
-
 const app = express();
-
-app.use(express.json())
-
-app.post('/products', async (req, res) => {
-    try {
-        const { name, price, description } = req.body;
-        const randomUUID = uuid.v4();
-        const newProduct = await Product.create(randomUUID, name, price, description);
-        res.json(newProduct);
-    } catch (err) {
-        console.error('Error creating product:', err);
-        res.status(500).send('Error creating product');
-    }
-});
-
-app.get('/products/:pid', async (req, res) => {
-    try {
-        const productId = req.params.pid;
-        const product = await Product.get(productId);
-        if (!product) {
-            return res.status(404).send('Product not found');
-        }
-        res.json(product);
-    } catch (err) {
-        console.error('Error getting product:', err);
-        res.status(500).send('Error getting product');
-    }
-});
-
-app.delete('/products/:id', async (req, res) => {
-    try {
-        const productId = req.params.id;
-        await Product.delete(productId);
-        res.sendStatus(204); // No content
-    } catch (err) {
-        console.error('Error deleting product:', err);
-        res.status(500).send('Error deleting product');
-    }
-});
-
-app.put('/products/:id', async (req, res) => {
-    try {
-        const productId = req.params.id;
-        const updates = req.body;
-        await Product.update(productId, updates);
-        res.sendStatus(200); // OK
-    } catch (err) {
-        console.error('Error updating product:', err);
-        res.status(500).send('Error updating product');
-    }
-});
+var logger = require('morgan');
+var productRouter = require('./routes/product.routes')
+app.use(logger('dev'));
+app.use(express.json());
+app.use('/api', productRouter);
 
 // Start the server
 app.listen(3000, () => {
     console.log('Server started on port 3000');
 })
+//
+// // catch 404 and forward to error handler
+// app.use(function(req, res, next) {
+//     res.status(err.status || 404).json({
+//         message: "No such route exists"
+//     })
+// });
+//
+// // error handler
+// app.use(function(err, req, res, next) {
+//     res.status(err.status || 500).json({
+//         message: "Error Message"
+//     })
+// });
+
+module.exports = app;
