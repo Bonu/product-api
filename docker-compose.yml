@@ -1,0 +1,31 @@
+
+
+services:
+  node-server:
+    build: .
+    ports:
+      - "3000:3000"
+    links:
+      - cassandra
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    environment:
+      USERNAME: "cassandra"
+      PASSWORD: "cassandra"
+      PORT: 3000
+      NODE_ENV: "production"
+    networks:
+      - service
+    command: node app.js
+  cassandra:
+    image: cassandra:latest
+    ports:
+      - 9042:9042
+volumes:
+  cassandra_data:
+    driver: local
+
+networks:
+  service:
+    driver: "bridge"
