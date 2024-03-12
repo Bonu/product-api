@@ -1,31 +1,42 @@
-
+version: '3'
 
 services:
   node-server:
     build: .
+    volumes:
+      - .:/usr/src/app
     ports:
       - "3000:3000"
-    links:
-      - cassandra
-    depends_on:
-      cassandra:
-        condition: service_healthy
-    environment:
-      USERNAME: "cassandra"
-      PASSWORD: "cassandra"
-      PORT: 3000
-      NODE_ENV: "production"
     networks:
-      - service
+      - product-api-network
     command: node app.js
+
   cassandra:
-    image: cassandra:latest
+    image: docker.io/bitnami/cassandra:4.0.12
+    container_name: bitnami-cassandra-v1
     ports:
-      - 9042:9042
+      - '7000:7000'
+      - '9042:9042'
+    volumes:
+      - ./schema/cassandra:/docker-entrypoint-initdb.d
+      - 'cassandra_data:/bitnami'
+    healthcheck:
+      test: [ "CMD", "/opt/bitnami/cassandra/bin/cqlsh", "-u cassandra", "-p cassandra" ,"-e \"describe keyspaces\"" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    environment:
+      - CASSANDRA_USER=cassandra
+      - CASSANDRA_SEEDS=cassandra
+      - CASSANDRA_PASSWORD_SEEDER=yes
+      - CASSANDRA_PASSWORD=cassandra
+    networks:
+      - product-api-network
+    restart: always
+
 volumes:
   cassandra_data:
     driver: local
 
 networks:
-  service:
-    driver: "bridge"
+  product-api-network:

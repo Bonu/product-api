@@ -37,13 +37,24 @@ AWS IAM
 AWS API Gateway 
 Enable Logging
 AWS Observability
-
+Enable Lint
 Test cases
 
+docker login --username jbonu25@gmail.com
+docker build -t product-api-image:1.0.0.1 .
+docker tag product-api-image:1.0.0.1 jbonu/product-api-image:1.0.0
+docker push jbonu/product-api-image:1.0.0
 
-57 docker build -t product-api-image:1.0.0.1 .
-58 docker push product-api-image:1.0.0.1
-59 docker tag product-api-image:1.0.0.1 jbonu/product-api-image:1.0.0
-60 docker push jbonu/product-api-image:1.0.0
+docker run --name cassandra-vmware -p 7000:7000 -p 9042:9042 -v %cd%:/bitnami -d bitnami/cassandra:latest
+docker exec -it  product-api-cassandra-1 bash
+
+docker exec -it  product-api-cassandra-1 bash
+/opt/bitnami/cassandra/bin/cqlsh -u cassandra -p cassandra
+DESCRIBE keyspaces;
+use product_keyspace;
+DESCRIBE products;
+select * from products;
+
+
 
 
