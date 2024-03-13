@@ -25,35 +25,6 @@ Your solution should include a working API and, some automated tests that verify
 Please include all of your source files (excluding 3rd party libraries such as node_modules) in your submission. Please include the schema for
 your database in the submission as well.
 
------------------------------------------
-
-Action items:
-
-Docker
-Kubernetes - minikube deployment
-Kubernetes - EKS
-AWS github
-AWS IAM
-AWS API Gateway 
-Enable Logging
-AWS Observability
-Enable Lint
-Test cases
-
-docker login --username jbonu25@gmail.com
-docker build -t product-api-image:1.0.3 .
-docker tag product-api-image:1.0.3 jbonu/product-api-image:1.0.3
-docker push jbonu/product-api-image:1.0.3
-
-docker run --name cassandra-vmware -p 7000:7000 -p 9042:9042 -v %cd%:/bitnami -d bitnami/cassandra:latest
-docker exec -it  product-api-cassandra-1 bash
-
-docker exec -it  product-api-cassandra-1 bash
-/opt/bitnami/cassandra/bin/cqlsh -u cassandra -p cassandra
-DESCRIBE keyspaces;
-use product_keyspace;
-DESCRIBE products;
-select * from products;
 
 
 
