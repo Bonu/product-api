@@ -2,20 +2,21 @@ const uuid = require('uuid');
 const Product = require("../models/product.model");
 const { Router } = require('express');
 const app = Router();
+const {logger} = require('../middleware/log')
 
 
 const createProduct = async (req, res) => {
     try {
         const { name, price, description } = req.body;
         if (!name || !price) {
-            return res.status(400).send('Name and price are required');
+            return res.status(400).json({'message':'Name and price are required'});
         }
         const randomUUID = uuid.v4();
         const newProduct = await Product.create(randomUUID.toString(), name, price, description);
         res.json(newProduct);
     } catch (err) {
-        console.error('Error creating product:', err);
-        res.status(500).send('Error creating product');
+        logger.error('Error creating product:', err);
+        res.status(500).json({'message':'Error creating product'});
     }
 };
 
@@ -28,29 +29,29 @@ async function getExchangeRate(amount, from, to, callback) {
     const options = {
         method: 'GET',
         headers: {
-            'X-RapidAPI-Key': '7ecba8f1c2msh6c407bb56160febp1630e6jsn26f2f50feace',
+            'X-RapidAPI-Key': '7ecba8f1c2msh6c407bb56160febp1630e6jsn26f2f50feace', // TODO: move the hard coded values to vault
             'X-RapidAPI-Host': 'currencyconverter.p.rapidapi.com'
         }
     };
-
     try {
         const response = await fetch(url, options);
         const result = await response.text();
-        console.log(result);
-        callback(result);
+        logger.info(result);
     } catch (error) {
-        console.error(error);
+        logger.error(error);
     }
 }
 
 const getProduct = async (req, res) => {
     try {
+        res.setHeader('Content-Type', 'application/json');
         const productId = req.params.id;
         const desiredCurrency = req.query.currency?.toUpperCase(); // Optional currency
         const product = await Product.get(productId);
         if (!product) {
             return res.status(404).send('Product not found');
         }
+
         // Convert price if currency is specified and supported
         if (desiredCurrency && ['USD','CAD', 'EUR', 'GBP'].includes(desiredCurrency)) { // Hardcoded values needs to be configurable
             if (desiredCurrency !== 'USD') {
@@ -68,34 +69,37 @@ const getProduct = async (req, res) => {
         }
         res.json(product);
     } catch (err) {
-        console.error('Error getting product:', err);
-        res.status(500).send('Error getting product');
+        logger.error('Error getting product:', err);
+        res.status(500).json('Error getting product');
     }
 };
 
 const deleteProduct = async (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
     try {
         const productId = req.params.id;
-        await Product.delete(productId);
+        const response = await Product.delete(productId);
         res.sendStatus(204); // No content
     } catch (err) {
-        console.error('Error deleting product:', err);
-        res.status(500).send('Error deleting product');
+        logger.error('Error deleting product:', err);
+        res.status(500).json('Error deleting product');
     }
 };
 
 const updateProduct = async (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
     try {
         const productId = req.params.id;
         const updates = req.body;
         await Product.update(productId, updates)
     } catch (err) {
-        console.error('Error updating product:', err);
-        res.status(500).send('Error updating product');
+        logger.error('Error updating product:', err);
+        res.status(500).json('Error updating product');
     }
 };
 
 const getMostViewedProducts = async (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
     // Get the desired number of products (default 5)
     const limit = parseInt(req.query.limit) || 5;
     const minViews = 1; // Only include products with at least 1 view
@@ -108,9 +112,7 @@ const getMostViewedProducts = async (req, res) => {
     if (currency) {
         topProducts.forEach(p => (p.price = convertPrice(p.price, currency)));
     }
-
     res.json(topProducts);
-
 };
 
-module.exports = {createProduct, getProduct, updateProduct, deleteProduct};
+module.exports = {createProduct, getProduct, updateProduct, deleteProduct, getMostViewedProducts};

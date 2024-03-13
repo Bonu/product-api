@@ -22,7 +22,6 @@ CREATE TABLE IF NOT EXISTS product_keyspace.deleted_products (
     price decimal,
     description text,
     deleted_date timestamp,
-    visits bigint,
 );
 
 // Remove the record from the table

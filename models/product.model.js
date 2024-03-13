@@ -1,4 +1,5 @@
 const cassandra= require('cassandra-driver');
+const {logger} = require('../middleware/log')
 let authProvider = new cassandra.auth.PlainTextAuthProvider('cassandra', 'cassandra'); // Get secrets from vault
 const client = new cassandra.Client({
     contactPoints: ['bitnami-cassandra-v1', '127.0.0.1'],
@@ -9,10 +10,9 @@ const client = new cassandra.Client({
 
 const Product = {
     async create(uuid ,name, price, description) {
-        const query = `INSERT INTO product_keyspace.products (pid, name, price, description) VALUES (?, ?, ?, ?)`;
+        const query = `INSERT INTO product_keyspace.products (pid, name, price, description, created_date) VALUES (?, ?, ?, ?, ?)`;
         const queryUpdateView = `UPDATE product_keyspace.product_visits SET visits = visits+0 WHERE pid = ?`;
-        console.log(uuid);
-        await client.execute(query, [uuid, name, price, description], {hints: [null, null, "bigint", null]});
+        await client.execute(query, [uuid, name, price, description, null], {hints: [null, null, "bigint", null, null]});
         await client.execute(queryUpdateView, [uuid]); // convert into a serverless function
         return { uuid, name, price, description };
     },
@@ -25,13 +25,39 @@ const Product = {
             await client.execute(queryUpdateView, [pid]); // convert into a serverless function
             return result.rows[0];
         } else {
+            logger.warn("No record found in table for pid: ", pid);
             return null;
         }
     },
 
     async delete(pid) {
-        const query = `DELETE FROM product_keyspace.products WHERE pid = ?`;
-        await client.execute(query, [pid]);
+        try {
+            // Get product details from active table
+            const getProductQuery = `SELECT * product_keyspace.products WHERE pid = ?`;
+            const productResult = await client.execute(getProductQuery, [pid]);
+
+            if (!productResult.rows.length) {
+                return { message: 'Product not found' };
+            }
+
+            const product = productResult.rows[0];
+
+            // Insert product into deleted table with deletion timestamp
+            const insertDeletedQuery = `INSERT INTO product_keyspace.deleted_products(pid, name, price, description, deleted_date)
+                                 VALUES (?, ?, ?, ?, ?)`;
+            const deletedResult = await client.execute(insertDeletedQuery, [
+                product.pid, product.name, product.price, product.description, new Date()
+            ]);
+
+            // Delete product from active table
+            const deleteActiveQuery = `DELETE FROM product_keyspace.products WHERE pid = ?`;
+            await client.execute(deleteActiveQuery, [pid]);
+
+            return { message: 'Product deleted successfully' };
+        } catch (err) {
+            logger.error('Error deleting product:', err);
+            throw err; // Re-throw for handling in API route
+        }
     },
 
     async update(pid, updates) {
@@ -69,8 +95,8 @@ const Product = {
             });
 
         } catch (err) {
-            console.error('Error fetching products:', err);
-            res.status(500).send('Internal Server Error');
+            logger.error('Error fetching products:', err);
+            return null;
         }
     },
 };
