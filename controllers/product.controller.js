@@ -1,9 +1,26 @@
+const redis = require('redis');
+const ioredis = require('ioredis');
 const uuid = require('uuid');
 const Product = require("../models/product.model");
 const { Router } = require('express');
 const app = Router();
 const {logger} = require('../middleware/log')
+const PRODUCT_VIEW_COUNT_KEY = 'most_viewed_products'; // Key for storing product IDs and view counts
+const PRODUCT_VIEW_COUNT_TTL = 60 * 60; // Cache expiration time in seconds (1 hour)
 
+// Replace with your Redis connection details
+const redisClient = new ioredis({
+    host: 'localhost',
+    port: 6379,
+});
+
+const updateProductViewCount = async function (pid) {
+    try {
+        await redisClient.zincrby(PRODUCT_VIEW_COUNT_KEY, 1, pid);
+    } catch (error) {
+        console.error('Error updating view count:', error);
+    }
+}
 
 const createProduct = async (req, res) => {
     try {
@@ -33,12 +50,15 @@ async function getExchangeRate(amount, from, to, callback) {
             'X-RapidAPI-Host': 'currencyconverter.p.rapidapi.com'
         }
     };
+
     try {
         const response = await fetch(url, options);
         const result = await response.text();
         logger.info(result);
+        return result;
     } catch (error) {
         logger.error(error);
+        return [];
     }
 }
 
@@ -103,14 +123,18 @@ const getMostViewedProducts = async (req, res) => {
     // Get the desired number of products (default 5)
     const limit = parseInt(req.query.limit) || 5;
     const minViews = 1; // Only include products with at least 1 view
+    const productIds = await redisClient.zrevrangebyscore(PRODUCT_VIEW_COUNT_KEY, '+inf', '-inf', 0, limit);
 
-    const topProducts = await Product.getMostViewed(minViews, limit);
+    // Fetch product details from database or another cache (if not included in ZSET)
+    const topProducts = await Promise.all(productIds.map(Product.get)); // Replace with your product details retrieval function
+
+    // const topProducts = await Product.getMostViewed(minViews, limit);
     res.sendStatus(200); // OK
 
     // Convert prices to specified currency if provided
     const currency = req.query.currency;
     if (currency) {
-        topProducts.forEach(p => (p.price = convertPrice(p.price, currency)));
+        topProducts.forEach(p => (p.price = getExchangeRate(p.price, 'USD', currency)));
     }
     res.json(topProducts);
 };
