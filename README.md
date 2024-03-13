@@ -41,9 +41,9 @@ Enable Lint
 Test cases
 
 docker login --username jbonu25@gmail.com
-docker build -t product-api-image:1.0.0.1 .
-docker tag product-api-image:1.0.0.1 jbonu/product-api-image:1.0.0
-docker push jbonu/product-api-image:1.0.0
+docker build -t product-api-image:1.0.3 .
+docker tag product-api-image:1.0.3 jbonu/product-api-image:1.0.3
+docker push jbonu/product-api-image:1.0.3
 
 docker run --name cassandra-vmware -p 7000:7000 -p 9042:9042 -v %cd%:/bitnami -d bitnami/cassandra:latest
 docker exec -it  product-api-cassandra-1 bash

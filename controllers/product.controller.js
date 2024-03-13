@@ -9,18 +9,18 @@ const PRODUCT_VIEW_COUNT_KEY = 'most_viewed_products'; // Key for storing produc
 const PRODUCT_VIEW_COUNT_TTL = 60 * 60; // Cache expiration time in seconds (1 hour)
 
 // Replace with your Redis connection details
-const redisClient = new ioredis({
-    host: 'localhost',
-    port: 6379,
-});
+// const redisClient = new ioredis({
+//     host: 'localhost',
+//     port: 6379,
+// });
 
-const updateProductViewCount = async function (pid) {
-    try {
-        await redisClient.zincrby(PRODUCT_VIEW_COUNT_KEY, 1, pid);
-    } catch (error) {
-        console.error('Error updating view count:', error);
-    }
-}
+// const updateProductViewCount = async function (pid) {
+//     try {
+//         await redisClient.zincrby(PRODUCT_VIEW_COUNT_KEY, 1, pid);
+//     } catch (error) {
+//         console.error('Error updating view count:', error);
+//     }
+// }
 
 const createProduct = async (req, res) => {
     try {
@@ -37,7 +37,6 @@ const createProduct = async (req, res) => {
     }
 };
 
-const currencyLayerApiKey = 'YOUR_CURRENCY_LAYER_API_KEY'; // Optional
 
 // Function to fetch exchange rates (if needed)
 async function getExchangeRate(amount, from, to, callback) {
@@ -71,7 +70,7 @@ const getProduct = async (req, res) => {
         if (!product) {
             return res.status(404).send('Product not found');
         }
-
+        // await updateProductViewCount(productId);
         // Convert price if currency is specified and supported
         if (desiredCurrency && ['USD','CAD', 'EUR', 'GBP'].includes(desiredCurrency)) { // Hardcoded values needs to be configurable
             if (desiredCurrency !== 'USD') {
@@ -123,12 +122,12 @@ const getMostViewedProducts = async (req, res) => {
     // Get the desired number of products (default 5)
     const limit = parseInt(req.query.limit) || 5;
     const minViews = 1; // Only include products with at least 1 view
-    const productIds = await redisClient.zrevrangebyscore(PRODUCT_VIEW_COUNT_KEY, '+inf', '-inf', 0, limit);
+    // const productIds = await redisClient.zrevrangebyscore(PRODUCT_VIEW_COUNT_KEY, '+inf', '-inf', 0, limit);
 
     // Fetch product details from database or another cache (if not included in ZSET)
-    const topProducts = await Promise.all(productIds.map(Product.get)); // Replace with your product details retrieval function
+    // const topProducts = await Promise.all(productIds.map(Product.get)); // Replace with your product details retrieval function
 
-    // const topProducts = await Product.getMostViewed(minViews, limit);
+    const topProducts = await Product.getMostViewed(minViews, limit);
     res.sendStatus(200); // OK
 
     // Convert prices to specified currency if provided

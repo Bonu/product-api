@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: product-api-server
+  name: product-api-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: product-api-server
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        network/product-api-network: "true"
+        service: product-api-server
+    spec:
+      containers:
+        - args:
+            - node
+            - app.js
+          image: jbonu/product-api-image:1.0.3
+          name: product-api-server
+          ports:
+            - containerPort: 3000
+          resources: {}
+      restartPolicy: Always
+status: {}

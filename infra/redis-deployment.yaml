@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    service: redis
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: redis
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: redis
+    spec:
+      containers:
+        - env:
+            - name: REDIS_PASSWORD
+              value: my-password
+            - name: REDIS_PORT
+              value: "6379"
+          image: redis:latest
+          name: redis
+          ports:
+            - containerPort: 6379
+          resources: {}
+      restartPolicy: Always
+status: {}

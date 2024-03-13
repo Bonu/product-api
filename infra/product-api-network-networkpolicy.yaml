@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  name: product-api-network
+spec:
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              network/product-api-network: "true"
+  podSelector:
+    matchLabels:
+      network/product-api-network: "true"

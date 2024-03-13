@@ -1,15 +1,23 @@
 version: '3.0'
 
 services:
-  node-server:
-    build: .
-    volumes:
-      - .:/usr/src/app
+  product-api-server:
+    image: jbonu/product-api-image:1.0.3
+    restart: always
     ports:
       - "3000:3000"
     networks:
       - product-api-network
     command: node app.js
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=my-password
+      - REDIS_PORT=6379
 
   cassandra:
     image: docker.io/bitnami/cassandra:4.0.12
