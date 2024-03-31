@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "C:\\Users\\janar\\WebstormProjects\\product-api\\Logs\\.0564a324c4d93d3dc8dc6995c47aee7d82a4c166-audit.json",
+    "files": [
+        {
+            "date": 1710419946526,
+            "name": "C:\\Users\\janar\\WebstormProjects\\product-api\\Logs\\web.03-14.log",
+            "hash": "095efd1e22cbd3b730d57c59e9fffce51607c6e60a189859e297c64ee93c8427"
+        }
+    ],
+    "hashType": "sha256"
+}

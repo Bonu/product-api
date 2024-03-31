@@ -2,6 +2,7 @@ const express = require('express');
 const productControllers = require('../controllers/product.controller');
 const router = express.Router();
 
+router.get('/test', productControllers.test);
 router.post('/products', productControllers.createProduct);
 router.get('/products/:id', productControllers.getProduct);
 router.put('/products/:id', productControllers.updateProduct);

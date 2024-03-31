@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 var logger = require('morgan');
-var productRouter = require('./routes/product.routes')
+var productRouter = require('./app/routes/product.routes')
 app.use(logger('dev'));
 app.use(express.json());
 app.use('/api/v1/', productRouter);

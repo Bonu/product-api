@@ -5,6 +5,7 @@ metadata:
   labels:
     service: cassandra
   name: cassandra
+  namespace:  product-dev-ns
 spec:
   ports:
     - name: "7000"

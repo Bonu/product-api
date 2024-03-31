@@ -25,7 +25,44 @@ Your solution should include a working API and, some automated tests that verify
 Please include all of your source files (excluding 3rd party libraries such as node_modules) in your submission. Please include the schema for
 your database in the submission as well.
 
+kubectl apply -f .\product-api-server-deployment.yaml
+kubectl apply -f .\product-api-server-service.yaml
+kubectl apply -f .\product-api-network-networkpolicy.yaml
+kubectl apply -f .\cassandra-deployment.yaml
+kubectl apply -f .\cassandra-deployment.yaml
+kubectl apply -f .\cassandra-service.yaml
+kubectl apply -f .\cassandra-data-persistentvolumeclaim.yaml
+kubectl apply -f .\cassandra-claim0-persistentvolumeclaim.yaml
+kubectl apply -f .\redis-deployment.yaml
+kubectl apply -f .\redis-service.yaml
 
+Docker
+Kubernetes - minikube deployment
+Kubernetes - EKS
+AWS github
+AWS IAM
+AWS API Gateway 
+Enable Logging
+AWS Observability
+Enable Lint
+Test cases
 
+docker login --username jbonu25@gmail.com
+docker build -t product-api-image:1.0.3 .
+docker tag product-api-image:1.0.3 jbonu/product-api-image:1.0.3
+docker push jbonu/product-api-image:1.0.3
+docker build -t product-api-image:1.0.4 .
+docker tag product-api-image:1.0.4 jbonu/product-api-image:1.0.4
+docker push jbonu/product-api-image:1.0.4
 
+57 docker build -t product-api-image:1.0.0.1 .
+58 docker push product-api-image:1.0.0.1
+59 docker tag product-api-image:1.0.0.1 jbonu/product-api-image:1.0.0
+60 docker push jbonu/product-api-image:1.0.0
+
+docker exec -it  product-api-cassandra-1 bash
+/opt/bitnami/cassandra/bin/cqlsh -u cassandra -p cassandra
+DESCRIBE keyspaces;
+use product_keyspace;
+select * from products;
 

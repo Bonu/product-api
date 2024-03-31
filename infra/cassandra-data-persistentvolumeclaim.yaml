@@ -5,6 +5,7 @@ metadata:
   labels:
     service: cassandra-data
   name: cassandra-data
+  namespace:  product-dev-ns
 spec:
   accessModes:
     - ReadWriteOnce

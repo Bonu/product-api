@@ -3,6 +3,7 @@ kind: NetworkPolicy
 metadata:
   creationTimestamp: null
   name: product-api-network
+  namespace:  product-dev-ns
 spec:
   ingress:
     - from:

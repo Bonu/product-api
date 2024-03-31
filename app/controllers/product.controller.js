@@ -138,4 +138,12 @@ const getMostViewedProducts = async (req, res) => {
     res.json(topProducts);
 };
 
-module.exports = {createProduct, getProduct, updateProduct, deleteProduct, getMostViewedProducts};
+const test = async (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    // Get the desired number of products (default 5)
+    res.json({"message":"helloworld"});
+};
+
+
+
+module.exports = {createProduct, getProduct, updateProduct, deleteProduct, getMostViewedProducts, test};
