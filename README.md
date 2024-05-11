@@ -18,51 +18,5 @@ When a single product is requested, all fields of that product are returned and 
 The latest exchange rates can be retrieved from the public API https://currencylayer.com/ (or any similar API).
 When a list of the most viewed products is requested, the API should return the products with the highest view-counts. By default, the top 5 products will be returned, but the request can also specify a custom number of products to return. Only products with at least 1 view should be included. A specific currency can also be specified in which case all the prices should be returned in that currency.
 
-When a product is deleted, it should no longer be included in any of the API responses but should remain in the database for audit purposes.
-
-Your solution should include a working API and, some automated tests that verify the behavior of the API. Feel free to use available libraries (such as NPM modules if using NodeJS) to avoid writing everything from scratch.
-
-Please include all of your source files (excluding 3rd party libraries such as node_modules) in your submission. Please include the schema for
-your database in the submission as well.
-
-kubectl apply -f .\product-api-server-deployment.yaml
-kubectl apply -f .\product-api-server-service.yaml
-kubectl apply -f .\product-api-network-networkpolicy.yaml
-kubectl apply -f .\cassandra-deployment.yaml
-kubectl apply -f .\cassandra-deployment.yaml
-kubectl apply -f .\cassandra-service.yaml
-kubectl apply -f .\cassandra-data-persistentvolumeclaim.yaml
-kubectl apply -f .\cassandra-claim0-persistentvolumeclaim.yaml
-kubectl apply -f .\redis-deployment.yaml
-kubectl apply -f .\redis-service.yaml
-
-Docker
-Kubernetes - minikube deployment
-Kubernetes - EKS
-AWS github
-AWS IAM
-AWS API Gateway 
-Enable Logging
-AWS Observability
-Enable Lint
-Test cases
-
-docker login --username jbonu25@gmail.com
-docker build -t product-api-image:1.0.3 .
-docker tag product-api-image:1.0.3 jbonu/product-api-image:1.0.3
-docker push jbonu/product-api-image:1.0.3
-docker build -t product-api-image:1.0.4 .
-docker tag product-api-image:1.0.4 jbonu/product-api-image:1.0.4
-docker push jbonu/product-api-image:1.0.4
-
-57 docker build -t product-api-image:1.0.0.1 .
-58 docker push product-api-image:1.0.0.1
-59 docker tag product-api-image:1.0.0.1 jbonu/product-api-image:1.0.0
-60 docker push jbonu/product-api-image:1.0.0
-
-docker exec -it  product-api-cassandra-1 bash
-/opt/bitnami/cassandra/bin/cqlsh -u cassandra -p cassandra
-DESCRIBE keyspaces;
-use product_keyspace;
-select * from products;
+When a product is deleted, it should no longer be included in any of the API responses but should remain in the database for audit purposes
 
